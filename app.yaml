@@ -1,0 +1,49 @@
+application: toxik
+version: 3
+runtime: python
+api_version: 1
+
+builtins:
+- appstats: on
+- datastore_admin: on
+- remote_api: on
+
+inbound_services:
+- warmup
+
+error_handlers:
+- file: templates/error_handlers/default_error.html
+- error_code: over_quota
+  file: templates/error_handlers/over_quota.html
+- error_code: dos_api_denial
+  file: templates/error_handlers/dos_api_denial.html
+- error_code: timeout
+  file: templates/error_handlers/timeout.html
+
+handlers:
+- url: /
+  login: required
+  static_files: index.html
+  upload: index.html
+  secure: always
+
+- url: /favicon.ico
+  static_files: assets/favicon.ico
+  upload: assets/favicon.ico
+  mime_type: image/vnd.microsoft.icon
+  secure: always
+  
+- url: /robots.txt
+  static_files: assets/robots.txt
+  upload: assets/robots.txt
+  secure: always
+  
+- url: /assets
+  static_dir: assets
+  secure: always
+  
+- url: .*
+  script: main.py
+  login: required
+  secure: always
+  auth_fail_action: unauthorized
